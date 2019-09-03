@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: Jake Greif
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -23,46 +23,82 @@ The completed exercise is due on 2019-09-04 before class begins.
 ## Course Setup
 1. Post the link to your forked GitHub repository below. Your repo should include one or more commits and an edited README file.  
 
->  Link:
+>  Link: https://github.com/jakegreif/Hydrologic_Data_Analysis
 
 2. Complete the Consent Form in Sakai. You must choose to either opt in or out of the research study being conducted in our course.
 
 Did you complete the form? (yes/no)
 
-> 
+> Yes
 
 ## Course Project
 
 3. What are some topics in aquatic science that are particularly interesting to you?
 
-> ANSWER: 
+> ANSWER: I'm interested in water quality issues. In particular, I'm interested in learning about human-induced water quality issues, and how they affect our water resoures. 
 
 4. Are there specific people in class who you would specifically like to have on your team?
 
-> ANSWER: 
+> ANSWER: I would like to work with any of the other MEMs, but I know that you will intentionally disperse us among the groups. Hopefully there are enough of us so that there have to be multiple MEMs in some groups.
 
 5. Are there specific people in class who you would specifically *not* like to have on your team?
 
-> ANSWER: 
+> ANSWER: No
 
 ## Data Visualization Exercises
 
 6. Set up your work session. Check your working directory, load packages `tidyverse`,  `dataRetrieval`, and `lubridate`. Set your ggplot theme as theme_classic (you may need to look up how to set your theme).
 
 ```{r, message = FALSE}
+# Check Working Directory
+getwd()
 
+# Install Packages
+#install.packages(c("tidyverse", "dataRetrieval", "lubridate", "quantreg"))
+
+# Load Packages
+library(tidyverse)
+library(dataRetrieval)
+library(lubridate)
+library(viridis)
+library(quantreg)
+
+# Set ggplot Theme
+mytheme <- theme_classic()
+
+theme_set(mytheme)
 ```
 
 7. Upload discharge data for the Eno River at site 02096500 for the same dates as we studied in class (2009-08-01 through 2019-07-31). Obtain data for discharge and gage height (you will need to look up these parameter codes). Rename the columns with informative titles. Imperial units can be retained (no need to change to metric).
 
 ```{r}
+# Obtain Stream Gage Data
+siteNo <- "02096500"
+pCode <- c("00060", "00065")
+start.date <- "2009-08-01"
+end.date <- "2019-07-31"
+
+# Read Data Into Dataset
+Haw <- readNWISdv(siteNumbers = siteNo,
+                     parameterCd = pCode,
+                     startDate = start.date,
+                     endDate = end.date)
+
+# Rename Columns
+Haw <- renameNWISColumns(Haw)
 
 ```
 
 8. Add a "year" column to your data frame (hint: lubridate has a `year` function).
 
 ```{r}
+# Add "Year" Column to Dataset
+Haw$Year <- substring(Haw$Date, 1, 4)
 
+class(Haw$Year)
+
+# Change Year to Numeric Class
+Haw$Year <- as.numeric(Haw$Year)
 ```
 
 9. Create a ggplot of discharge vs. gage height, with gage height as the x axis. Color each point by year. Make the following edits to follow good data visualization practices: 
@@ -72,21 +108,32 @@ Did you complete the form? (yes/no)
 * Make points 50 % transparent
 
 ```{r}
-
+# Discharge vs. Gage Height Scatterplot 
+ggplot(Haw, aes(x = GH, y = Flow, color = Year)) +
+  geom_point() +
+  scale_color_viridis() +
+  ylab("Discharge (ft^3/s)") +
+  xlab("Gage Height (ft)") 
 ```
 
 10. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: 
+> ANSWER: The graph reveals that discharge and gage height are positively correlated. For the majority of the time period of the data, the discharge and gage height have been at or below 5,000 ft^3 and 10 ft, respectively. Though, the discharge and gage height are occasionally relatively high, which occurred more often during the second half of the period that the data represents.
 
 11. Create a ggplot violin plot of discharge, divided by year. (Hint: in your aesthetics, specify year as a factor rather than a continuous variable). Make the following edits to follow good data visualization practices: 
 
 * Remove x axis label
 * Add a horizontal line at the 0.5 quantile within each violin (hint: draw_quantiles)
 ```{r}
+# Discharge Violin Plot, by Year
+ggplot(Haw, aes(y = Flow, x = factor(Year))) +
+  geom_violin(draw_quantiles = 0.5) +
+  scale_color_viridis() +
+  ylab("Discharge (ft^3/s)") +
+  xlab("") 
 
 ```
 
 12. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: 
+> ANSWER: Three of the four highest peak dischargers in the Haw river have occurred in the last three years. Additionally, the past two years have seen less stable discharge compared to previous years. 2012 and 2017 had the most stable discharges over the 10 year period, evident by the wide sections of each violin plot.
