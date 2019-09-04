@@ -7,7 +7,7 @@ geometry: margin=2.54cm
 editor_options: 
   chunk_output_type: console
 ---
-a
+
 ## Lesson Objectives
 1. Investigate the concepts of lake stratification and mixing by analyzing monitoring data
 2. Apply data analytics skills to applied questions about physical properties of lakes
@@ -15,8 +15,16 @@ a
 
 ## Opening Discussion
 What is a lake? How does this differ from a stream, river, or wetland?
+- Present in a depression, typically isolated from other large bodies of water (i.e. the ocean)
+- Low or no flow
+- Emeregent vegetation possible on the fringes, but not across the entire lake (compared to a wetland)
+- Generally, light doesn't penetrate to the deepest point
 
 What are the physical properties of lakes?
+- Temperature gradients
+- Size threshold (small lakes can be considered ponds)
+- Low or no flow, still water (lentic)
+- 
 
 ## Session Set Up
 ```{r, message = FALSE}
@@ -87,6 +95,7 @@ unique(Pauldata$depth)
 unique(Peterdata$depth)
 unique(Tuesdaydata$depth)
 # Why didn't we use the "summary" function here?
+# A: Summary would give us a statistical summary of things (mean, max, min, etc.) because the class is numeric
 ```
 
 ### Exploratory data visualization
@@ -101,7 +110,7 @@ print(TempvsDepth)
 ```
 
 How do temperatures at the surface compare to temperatures at the mid-depths and at the bottom?
-<add notes here>
+A: Temps are warmer at the surface, and decrease with depth. Temperature also varies more at the surface, and the variance decreases with depth. The bottom of the lake does not interact with the atmosphere.
 
 Let's make a few data frames that include measurements from specific depths. We will choose dates only from the 2000s for ease of interpretation.
 
@@ -137,7 +146,7 @@ print(Tempplot.mixed)
 ```
 
 Now let's take out the 2 m and 9 m points and add in the 4 m and 6 m points. How do these compare to the surface and bottom temperatures?
-<add notes here>
+Hypolimneon is the 9-12m where the water is mixed and not changing.
 
 Here are are highlighting depths considered the **metalimnion** or **thermocline**.
 ```{r}
@@ -152,10 +161,11 @@ Tempplot.thermocline <-
              color = "#08306b", size = 1) +
   labs(y = expression("Temperature "(degree*C)), x = "Year")
 print(Tempplot.thermocline)
+#  4-6m are associated with the thermocline, where the temp changes quickly. 
 ```
 
 Why can't we use a line graph here?
-<add notes here>
+A: We removed the rows with NAs (which would place breaks in the lines), and samples were collected only during the summer.
 ```{r}
 Tempplot.line <- 
   ggplot(Pauldata.surface, aes(x = sampledate, y = temperature_C)) +
@@ -187,6 +197,7 @@ TempprofileMay2016 <-
   geom_line(color = "#081d58") +
   geom_vline(xintercept = 4, lty = 2) +
   scale_y_reverse(breaks = c(0, 2, 4, 6, 8, 10, 12)) +
+# the above command flips our graph
   scale_x_continuous(position = "top", limits = c(0, 30)) +
   labs(x = expression("Temperature "(degree*C)), y = "Depth (m)")
 print(TempprofileMay2016)
