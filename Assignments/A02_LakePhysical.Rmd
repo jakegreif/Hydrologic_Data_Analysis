@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Physical Properties of Lakes"
-author: "Student Name"
+author: Jake Greif
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -27,8 +27,22 @@ The completed exercise is due on 11 September 2019 at 9:00 am.
 3. Import the NTL-LTER physical lake dataset and set the date column to the date format
 4. Set your ggplot theme (can be theme_classic or something else)
 
-```{r}
+```{r, message = FALSE}
+# Check Working Directory
+getwd()
 
+# Load Packages
+library(tidyverse)
+library(lubridate)
+library(cowplot)
+
+# Import Data
+NTLdata <- read.csv("./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv")
+
+# Set ggplot Theme
+mytheme <- theme_classic()
+
+theme_set(mytheme)
 ```
 
 ## Creating and analyzing lake temperature profiles
@@ -38,7 +52,18 @@ The completed exercise is due on 11 September 2019 at 9:00 am.
 5. Choose either Peter or Tuesday Lake. Create a new data frame that wrangles the full data frame so that it only includes that lake during two different years (one year from the early part of the dataset and one year from the late part of the dataset).
 
 ```{r}
+# Change sampledate to Date
+NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y")
 
+# Make Tuesday Lake data frame
+Tuesdaydata <- filter(NTLdata, lakename == "Tuesday Lake")
+
+# Trim Tuesday data frame to include only 1993 and 2016
+Tues.data.skinny <- filter(Tuesdaydata, year4 == 1993 | year4 == 2016)
+
+# Make 2 separate data frames for each year
+Tues.1993 <- filter(Tues.data.skinny, year4 == 1993)
+Tues.2016 <- filter(Tues.data.skinny, year4 == 2016)
 ```
 
 6. Create three graphs: (1) temperature profiles for the early year, (2) temperature profiles for the late year, and (3) a `plot_grid` of the two graphs together. Choose `geom_point` and color your points by date. 
@@ -46,38 +71,132 @@ The completed exercise is due on 11 September 2019 at 9:00 am.
 Remember to edit your graphs so they follow good data visualization practices.
 
 ```{r}
+Tempprofiles1993 <- 
+  ggplot(Tues.1993, aes(x = temperature_C,y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top", limits = c(4,25)) +
+  scale_color_viridis_c(end = 0.8, option = "magma") +
+  labs(x = expression("1993 Temperature "(degree*C)), y = "Depth (m)") +
+  theme(legend.position = "none")
+print(Tempprofiles1993)
 
+Tempprofiles2016 <- 
+  ggplot(Tues.2016, aes(x = temperature_C, y = depth, color = daynum)) +
+  geom_point() +
+  scale_y_reverse() +
+  scale_x_continuous(position = "top") +
+  scale_color_viridis_c(end = 0.8, option = "magma") +
+  labs(x = expression("2016 Temperature "(degree*C)), y = "Depth (m)",
+       color = "Julian Day") +
+  theme(axis.text.y = element_blank(), axis.title.y = element_blank())
+print(Tempprofiles2016)
+
+Temp.1993.2016 <- 
+  plot_grid(Tempprofiles1993, Tempprofiles2016, 
+            ncol = 2, rel_widths = c(0.9, 1))
+print(Temp.1993.2016)
 ```
 
 7. Interpret the stratification patterns in your graphs in light of seasonal trends. In addition, do you see differences between the two years?
 
-> 
+> Temperatures increase through the year, but the magnitude of the increase decreases with depth. Temperature essentially doesn't change below 7.5 m, which is due to thermal stratification and a lack of mixing in the summer. In 1993 the epilimnion was cooler throughout the summer than in 2016, but the metalimnion warmed slightly in 1993 compared to 2016.
 
 ### Multiple lakes, single date 
 
 8. On July 25, 26, and 27 in 2016, all three lakes (Peter, Paul, and Tuesday) were sampled. Wrangle your data frame to include just these three dates.
 
 ```{r}
-
+July.2016 <- filter(NTLdata, lakename == "Peter Lake" |
+                      lakename == "Paul Lake" |
+                      lakename == "Tuesday Lake")
+July.2016 <- filter(July.2016, sampledate == "2016-07-25" |
+                      sampledate == "2016-07-26" |
+                      sampledate == "2016-07-27")
 ```
 
 9. Plot a profile line graph of temperature by depth, one line per lake. Each lake can be designated by a separate color.
 
 ```{r}
+# Separate data frame by lake
+Peter.July.2016 <- filter(July.2016, lakename == "Peter Lake")
+Paul.July.2016 <- filter(July.2016, lakename == "Paul Lake")
+Tues.July.2016 <- filter(July.2016, lakename == "Tuesday Lake")
 
+# Plot temp profile of each lake
+PeterTempProfileJuly2016 <- 
+  ggplot(Peter.July.2016, aes(x = temperature_C, y = depth)) +
+  geom_line(color = "#081d58") +
+  geom_vline(xintercept = 4, lty = 2) +
+  scale_y_reverse(breaks = c(0, 2, 4, 6, 8, 10, 12)) +
+  scale_x_continuous(position = "top", limits = c(0, 30)) +
+  labs(x = expression("Temperature "(degree*C)), y = "Depth (m)")
+print(PeterTempProfileJuly2016)
+
+PaulTempProfileJuly2016 <- 
+  PeterTempProfileJuly2016 +
+  geom_line(data = Paul.July.2016, aes(x = temperature_C, y = depth), 
+            color = "#1d91c0")
+print(PaulTempProfileJuly2016)
+
+TuesTempProfileJuly2016 <- 
+  PaulTempProfileJuly2016 +
+  geom_line(data = Tues.July.2016, aes(x = temperature_C, y = depth), 
+            color = "#225ea8")
+print(TuesTempProfileJuly2016)
 ```
 
 10. What is the depth range of the epilimnion in each lake? The thermocline? The hypolimnion?
 
->
+> The range of the epilimnion is from the surface to 3 meters. The range of the thermocline is from 2 meters to approximately 9 meters. And the range of the hypolmnion is from about 6 meters to the lake bed.
 
 ## Trends in surface temperatures over time. 
 11. Run the same analyses we ran in class to determine if surface lake temperatures for a given month have increased over time ("Long-term change in temperature" section of day 4 lesson in its entirety), this time for either Peter or Tuesday Lake. 
 
 ```{r}
+# 1. Add Month Column
+Tuesdaydata$Month <- substring(Tuesdaydata$sampledate, 7,7)
 
+# 2. Filter data frame
+Tues.0 <- filter(Tuesdaydata, depth == 0)
+Tues.summer <- filter(Tues.0, Month == c(5,6,7,8))
+Tues.summer$Month[Tues.summer$Month == 5] <- "May"
+Tues.summer$Month[Tues.summer$Month == 6] <- "June"
+Tues.summer$Month[Tues.summer$Month == 7] <- "July"
+Tues.summer$Month[Tues.summer$Month == 8] <- "August"
+
+# 3. Create 4 Separate DF
+Tues5 <- filter(Tues.summer, Month == "May")
+Tues6 <- filter(Tues.summer, Month == "June")
+Tues7 <- filter(Tues.summer, Month == "July")
+Tues8 <- filter(Tues.summer, Month == "August")
+
+# 4. Run Linear Regression
+Tues5.lm <- lm(data = Tues5, temperature_C ~ year4)
+summary(Tues5.lm)
+Tues6.lm <- lm(data = Tues6, temperature_C ~ year4)
+summary(Tues6.lm)
+Tues7.lm <- lm(data = Tues7, temperature_C ~ year4)
+summary(Tues7.lm)
+Tues8.lm <- lm(data = Tues8, temperature_C ~ year4)
+summary(Tues8.lm)
+
+# Calculate how many degrees the lake has warmed (for sig. trends)
+
+# There are no signifcant surface temperature trends in Tuesday Lake.
+
+# 6. Plot surface temps by date and facet by month
+TuesSurfTemps <-
+  ggplot(Tues.summer, aes(x = sampledate, y = temperature_C,
+            color = Month)) +
+  labs(x = "Year", y = expression("Temperature "(degree*C))) +
+  geom_smooth(se = FALSE, method = lm, color = "black", size = 0.8) +
+  geom_point() +
+  facet_wrap(vars(Month), nrow = 2)
+print(TuesSurfTemps)
+  
 ```
 
 12. How do your results compare to those we found in class for Paul Lake? Do similar trends exist for both lakes?
 
-> 
+> There are no significant trends in Tuesday Lake, compared to Paul Lake which had significant increasing trends in two months. 
