@@ -88,7 +88,7 @@ Tempprofiles2016 <-
   scale_x_continuous(position = "top") +
   scale_color_viridis_c(end = 0.8, option = "magma") +
   labs(x = expression("2016 Temperature "(degree*C)), y = "Depth (m)",
-       color = "Julian Day") +
+       color = "Ordinal Day") +
   theme(axis.text.y = element_blank(), axis.title.y = element_blank())
 print(Tempprofiles2016)
 
@@ -181,7 +181,7 @@ summary(Tues7.lm)
 Tues8.lm <- lm(data = Tues8, temperature_C ~ year4)
 summary(Tues8.lm)
 
-# Calculate how many degrees the lake has warmed (for sig. trends)
+# 5. Calculate how many degrees the lake has warmed (for sig. trends)
 
 # There are no signifcant surface temperature trends in Tuesday Lake.
 
