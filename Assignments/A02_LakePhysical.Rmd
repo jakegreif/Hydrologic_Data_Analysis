@@ -51,7 +51,7 @@ theme_set(mytheme)
 
 5. Choose either Peter or Tuesday Lake. Create a new data frame that wrangles the full data frame so that it only includes that lake during two different years (one year from the early part of the dataset and one year from the late part of the dataset).
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Change sampledate to Date
 NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y")
 
@@ -70,7 +70,7 @@ Tues.2016 <- filter(Tues.data.skinny, year4 == 2016)
 
 Remember to edit your graphs so they follow good data visualization practices.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 Tempprofiles1993 <- 
   ggplot(Tues.1993, aes(x = temperature_C,y = depth, color = daynum)) +
   geom_point() +
@@ -106,7 +106,7 @@ print(Temp.1993.2016)
 
 8. On July 25, 26, and 27 in 2016, all three lakes (Peter, Paul, and Tuesday) were sampled. Wrangle your data frame to include just these three dates.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 July.2016 <- filter(NTLdata, lakename == "Peter Lake" |
                       lakename == "Paul Lake" |
                       lakename == "Tuesday Lake")
@@ -117,7 +117,7 @@ July.2016 <- filter(July.2016, sampledate == "2016-07-25" |
 
 9. Plot a profile line graph of temperature by depth, one line per lake. Each lake can be designated by a separate color.
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # Separate data frame by lake
 Peter.July.2016 <- filter(July.2016, lakename == "Peter Lake")
 Paul.July.2016 <- filter(July.2016, lakename == "Paul Lake")
@@ -153,7 +153,7 @@ print(TuesTempProfileJuly2016)
 ## Trends in surface temperatures over time. 
 11. Run the same analyses we ran in class to determine if surface lake temperatures for a given month have increased over time ("Long-term change in temperature" section of day 4 lesson in its entirety), this time for either Peter or Tuesday Lake. 
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 # 1. Add Month Column
 Tuesdaydata$Month <- substring(Tuesdaydata$sampledate, 7,7)
 
