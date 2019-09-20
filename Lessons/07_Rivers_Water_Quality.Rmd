@@ -38,11 +38,19 @@ theme_set(theme_classic())
 
 Why are these important measures of water quality?
 
+<<<<<<< HEAD
 > Both can give you an indication of where the water is sourced from, or where pollutants are coming from. There are also ranges of these measures that are adequate for certain uses.
 
 What types of disturbances can impact these parameters?
 
 > geology, pollutants
+=======
+>
+
+What types of disturbances can impact these parameters?
+
+>
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 ## How does mining impact specific conductance and pH?
 
@@ -55,7 +63,10 @@ dat.raw <- readNWISqw(siteNumbers = c("03201300","03206790"), #Kanawha river & T
                      endDate = "")
 
 str(dat.raw, give.attr = FALSE)
+<<<<<<< HEAD
 # structure function shows us the structure of the data
+=======
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 dat <- dat.raw %>%
   select(Site = site_no, 
@@ -65,7 +76,10 @@ dat <- dat.raw %>%
   group_by(Date, Parameter, Site) %>%
   summarize(Value = mean(Value)) %>%
   spread(key = Parameter, value = Value) %>%
+<<<<<<< HEAD
 # spread function- key tells it what column it will end up in, and value tells it what value to give those parameters
+=======
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
   rename(SpC = '00095', pH = '00400') %>%
   mutate(Site = case_when(Site == "03201300" ~ "Kanawha River",
                           Site == "03206790" ~ "Twelvepole Creek"))
@@ -107,6 +121,7 @@ print(SpC.plot)
 
 What differences do you see?
 
+<<<<<<< HEAD
 > Kanawha has a higher pH and lower conductance after 1970
 
 Why might mining be causing the changes you see?
@@ -116,6 +131,17 @@ Why might mining be causing the changes you see?
 What is the data frequency of these water quality samples? Why don't we have daily values? How does this inform your interpretation of the data?
 
 > The data was collected infrequently, so it's hard to see the true variability of the data
+=======
+>
+
+Why might mining be causing the changes you see?
+
+>
+
+What is the data frequency of these water quality samples? Why don't we have daily values? How does this inform your interpretation of the data?
+
+>
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
   
 ## What can legislative protections do for water quality?
 
@@ -152,7 +178,11 @@ print(SpC.plot)
 
 Discuss with your group about the differences you see.
 
+<<<<<<< HEAD
 > K river pH stabalizes around 7.3-7.4, and T river pH drops by nearly 1 pH. Conductance in the K river stabalizes as well, and it remains lower than it was in the 60s. T river is a little less variable after 1977.
+=======
+>
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 ## Were remediation efforts successful?
 
@@ -187,7 +217,10 @@ print(histograms)
 densityplots <- ggplot(Kanawha.yearly.averages %>% filter(!is.na(bin)), 
        aes(x = SpC, fill = bin)) +
   geom_density(alpha = 0.8) +
+<<<<<<< HEAD
 # uses geom density when we're working with just a few points
+=======
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
   ggtitle("Annual Averages of Specific Conductance in the Kanawha River 1958:1997") +
   labs(x = expression("Specific Conductance ("*mu*S * cm**-1*")"), 
        y = "Probability Density") +
@@ -211,11 +244,19 @@ t.test(x, y)
 
 How would you communicate these results to a manager? 
 
+<<<<<<< HEAD
 > Use the density plot to show that SC has decreased, and mention that it's statistically significant.
 
 What can you say with data visualization that you can't say with just the statistical tests?
 
 > The test tells us that there's a difference, but the graph shows you how they're different.
+=======
+>
+
+What can you say with data visualization that you can't say with just the statistical tests?
+
+>
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 
 ## How have individual ions changed over the this timeperiod?
@@ -237,6 +278,7 @@ Manganese.plot <- ggplot(Manganese.dat, aes(x = Date, y = Manganese_ugL)) +
   ggtitle("Manganese Concentrations in the Kanawha River")
 
 print(Manganese.plot)
+<<<<<<< HEAD
 
 Mn.plot <- ggplot(Manganese.dat, aes(x = Date, y = Manganese_ugL)) +
   geom_smooth() +
@@ -248,19 +290,30 @@ Mn.plot <- ggplot(Manganese.dat, aes(x = Date, y = Manganese_ugL)) +
 
 
 print(Mn.plot)
+=======
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 ```
 
 Try plotting the manganese data with points instead of lines. Which do you prefer? Why?
 
+<<<<<<< HEAD
 > Lines b/c it's easier to read
 
 EPA drinking water standards for Manganese are 0.05 *_mg/L_*. How does the Kanawha stack up?
 
 > 0.05 mg/L = 50 ug/L, so the K river was getting close by the end of the data collection period
+=======
+>
+
+EPA drinking water standards for Manganese are 0.05 *_mg/L_*. How does the Kanawha stack up?
+
+>
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 Take some time to look at other ions as well. Some suggestions are sulfate (```00945```), nitrate (```71851```), and iron (```71885```), or use the ```whatNWISdata()``` function to find others! EPA drinking water regulations can be found here: https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations. Pay close attention to units! Information about parameter codes can be found in the dataframe ```parameterCdFile```.
 
 ```{r other_ion_data}
+<<<<<<< HEAD
 Nitrate.raw <- readNWISqw('03201300', parameterCd = '71851')
 
 Nitrate.dat <- Nitrate.raw %>%
@@ -277,6 +330,9 @@ N.plot <- ggplot(Nitrate.dat, aes(x = Date, y = Nitrate_mgL)) +
 
 
 print(N.plot)
+=======
+
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 ```
 
@@ -285,7 +341,11 @@ print(N.plot)
 
 Based on the data you've looked at today, what are some of the water quality impacts of mining?  What other disturbances might cause similar changes?
 
+<<<<<<< HEAD
 > 
+=======
+>
+>>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 # References
 
