@@ -36,7 +36,7 @@ theme_set(theme_classic(base_size = 12))
 
 ## Microbiological indicators
 
-Bacteria is present in almost every stream on earth. Most bacteria are harmless, but some are extremely dangerous to human health.Typical sources of bacterial contamination include waste water treatment plants, animal manure lagoons, and septic systems. There are multiple ways that bacteria can be measured for water quality.
+Bacteria is present in almost every stream on earth. Most bacteria are harmless, but some are extremely dangerous to human health. Typical sources of bacterial contamination include waste water treatment plants, animal manure lagoons, and septic systems. There are multiple ways that bacteria can be measured for water quality.
 
 1) **Total cell counts**. One way to measure the bacteria in water is to count the number of cells under a microscope in a given volumn of water (such as 1 mL). The units for this metric are cells ml^-1^.
 2) **Total coliforms**. Coliform bacteria are for the most part harmless microorganisms that live in animal intestines. Total coliforms are often used as a metric of how much raw or insufficiently treated sewage is making its way into a water body. The way these are measured are by taking a known volume of water, cultivating it in the lab, and counting the number of colonies that grow. Units for this metric are colony forming units (cfu) per 100 ml.
@@ -45,15 +45,15 @@ Bacteria is present in almost every stream on earth. Most bacteria are harmless,
 
 Why might it be helpful to have multiple ways to measure bacteria?
 
->
+> Using different methods allows you to cross-validate them. If you only use one, you may be missing the errors in it.
 
 Where and when do you think the biggest risks from harmful bacteria are?
 
->
+> Near wwtps, after a flooding event
 
 Measuring microbiogial indicators is more expensive and time consuming than some other water quality metrics. Where and when would you measure these?
 
->
+> It would make the most sense to sample at streams used for recreation or drinking water, or near wwtps. Samples might be collected during certain times of the year, or after an event that indicates that water quality might have declined
 
 ## How have improvements in sewage treatment affected water quality?
 
@@ -162,15 +162,15 @@ print(Microbes.plot)
 
 How would you use all of this data to talk about changes in microbial water quality from 1970 to 2000? What are the challenges?
 
->
+> It's difficult because none of the data spans the whole 30 year period, the scales are different, and we don't know how each variable is related to the others.
 
 Do you think water quality has improved between 1970 and 2000? Why or why not?
 
->
+> Generally yes, because nearly all of the data points decrease over time. For example, FC 0.7 will always be greater than FC 0.45 because it lets more stuff through the filter. So, because FC 0.45 was up to 12,500 at a point, and then FC 0.7, which was collected later, goes no higher than 8,000, we know that FC 0.45 must be below 8,000, so water quality has improved.
 
 The city of Lawrence, MA is downstream of Lowell and gets its drinking water from the Merrimack River. Use the federal drinking water standard for Total Coliforms (https://www.epa.gov/ground-water-and-drinking-water/national-primary-drinking-water-regulations#Microorganisms) to comment on whether or not this water necessarily needs to be treated for bacteria.
 
->
+> 
 
 ## Seasonal Trends in Water Quality
 
@@ -197,15 +197,40 @@ coli.seasons <- ggplot(coli.monthly.summaries, aes(x = month)) +
     labs(y = "Total coliforms (cfu / 100 ml)") 
 
 print(coli.seasons)
+
+# Seasonal analysis of fecal streptocci (m-Enterococcus)
+
+monthly.obs <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(-Date) %>%
+  summarize_all(funs(sum(!is.na(.))))
+
+FS.KF.monthly.summaries <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, F.strep.strep) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+FS.KF.seasons <- ggplot(FS.KF.monthly.summaries, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "F strep strep (cfu / 100 ml)") 
+
+print(FS.KF.seasons)
 ```
 
 When are total coliform concentrations highest? Why might this be?
 
->
+> In the late summer (July-Sep), because the water is warmest
 
 Does this pattern also exist for the other microbial indicators?
 
->
+> No, F strep strep and FC 0.7 peak in December
 
 ## Combined Sewer Overflows (CSOs)
 
@@ -215,11 +240,11 @@ The USGS site that we got the water quality data from does not have discharge da
 
 Which site's discharge data would better indicate when the city of Lowell has exprienced a big rain event?
 
->
+> The smaller stream, closer to the city which is more sensitive to the local conditions of the city.
 
 What would a CSO event look like in the data?
 
->
+> High microbe counts around the time of the rain event
 
 ```{r pull_hydrology}
 
@@ -241,6 +266,7 @@ Total_Coliform <- with(microb.dat, xts(x = Total.coli, order.by = Date))
 Discharge <- with(discharge.dat, xts(x = Discharge_cfs, order.by = Date))
 
 DyDat <- cbind(Total_Coliform, Discharge)
+# cbind makes a matrix? basically it puts both datasets together(?)
 
 dygraph(DyDat) %>% 
   dySeries("Total_Coliform", axis = "y2") %>% 
@@ -253,8 +279,8 @@ Look through the data series and see if you can find some times when a CSO likel
 
 ```{r CSO_event, eval=FALSE}
 
-begin.date <- 
-end.date <- 
+begin.date <- "1976-07-30"
+end.date <- "1976-8-31"
   
 discharge.plot <- ggplot(data =  %>% 
                    filter(), 
