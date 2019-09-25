@@ -38,19 +38,16 @@ theme_set(theme_classic())
 
 Why are these important measures of water quality?
 
-<<<<<<< HEAD
 > Both can give you an indication of where the water is sourced from, or where pollutants are coming from. There are also ranges of these measures that are adequate for certain uses.
 
 What types of disturbances can impact these parameters?
 
 > geology, pollutants
-=======
->
+
 
 What types of disturbances can impact these parameters?
 
 >
->>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
 
 ## How does mining impact specific conductance and pH?
 
@@ -63,10 +60,9 @@ dat.raw <- readNWISqw(siteNumbers = c("03201300","03206790"), #Kanawha river & T
                      endDate = "")
 
 str(dat.raw, give.attr = FALSE)
-<<<<<<< HEAD
+
 # structure function shows us the structure of the data
-=======
->>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
+
 
 dat <- dat.raw %>%
   select(Site = site_no, 
@@ -76,10 +72,7 @@ dat <- dat.raw %>%
   group_by(Date, Parameter, Site) %>%
   summarize(Value = mean(Value)) %>%
   spread(key = Parameter, value = Value) %>%
-<<<<<<< HEAD
 # spread function- key tells it what column it will end up in, and value tells it what value to give those parameters
-=======
->>>>>>> 096cc38c2f3f68492572892a483a0b1d090a9cd0
   rename(SpC = '00095', pH = '00400') %>%
   mutate(Site = case_when(Site == "03201300" ~ "Kanawha River",
                           Site == "03206790" ~ "Twelvepole Creek"))
@@ -121,7 +114,6 @@ print(SpC.plot)
 
 What differences do you see?
 
-<<<<<<< HEAD
 > Kanawha has a higher pH and lower conductance after 1970
 
 Why might mining be causing the changes you see?
@@ -131,8 +123,6 @@ Why might mining be causing the changes you see?
 What is the data frequency of these water quality samples? Why don't we have daily values? How does this inform your interpretation of the data?
 
 > The data was collected infrequently, so it's hard to see the true variability of the data
-=======
->
 
 Why might mining be causing the changes you see?
 
