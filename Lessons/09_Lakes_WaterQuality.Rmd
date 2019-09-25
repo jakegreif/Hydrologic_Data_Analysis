@@ -28,6 +28,7 @@ library(LAGOSNE)
 
 theme_set(theme_classic())
 options(scipen = 100)
+# This is a work around to remove the E notations (if numbers are huge) in the data
 
 lagosne_get(dest_folder = LAGOSNE:::lagos_path(), overwrite = TRUE)
 
@@ -49,7 +50,7 @@ LAGOSdata <- lagosne_load()
 names(LAGOSdata)
 
 # If the package installation and data download has not worked, use this code: 
-# load(file = "./Data/Raw/LAGOSdata.rda")
+ load(file = "./Data/Raw/LAGOSdata.rda")
 
 # Exploring the data types that are available
 LAGOSlocus <- LAGOSdata$locus
@@ -71,6 +72,7 @@ Add notes about each line of code as we go along. What does each function do?
 ```{r}
 # Join data frames
 LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
+# Here we're taking everything from LAGOSlocus and adding all the columns that match up in LAGOSstate by the state_zoneid
 
 # Order by number of lakes
 LAGOSlocations <- 
@@ -115,7 +117,9 @@ LAGOStrophic <-
          gnis_name, lake_area_ha, state, state_name) %>%
   mutate(sampleyear = year(sampledate), 
          samplemonth = month(sampledate), 
+# creates a sampleyear and sample month column from the year and month in the sampledate column
          season = as.factor(quarter(sampledate, fiscal_start = 12))) %>%
+# quarter function divides the data into quarters. Here we're saying starting at month 12, so 12, 1, and 2 will be our winter season, and so on. 
   drop_na(chla:secchi)
 
 levels(LAGOStrophic$season) <- c("Winter", "Spring", "Summer", "Fall")
