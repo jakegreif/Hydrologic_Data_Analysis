@@ -178,6 +178,7 @@ LAGOStrophic$trophic.class <-
 #          levels = c("Spring", "Summer", "Fall", "Winter"))
 
 #scales::show_col(colormap(colormap = colormaps$magma, nshades=16))
+# this is a way to pick out colors from a colormap (picks out specific hex codes)
 ```
 
 Now let's compare TSI values calculated from chl, secchi depth, and TP. If these were all perfectly equivalent metrics, all points should line up on the 1:1 line. 
@@ -190,6 +191,7 @@ chlvssecchi <- ggplot(LAGOStrophic, aes(x = TSI.chl, y = TSI.secchi)) +
   scale_x_continuous(limits = c(0, 100)) +
   geom_abline(slope = 1, intercept = 0) 
 print(chlvssecchi)
+
   
 chlvstp <- ggplot(LAGOStrophic, aes(x = TSI.chl, y = TSI.tp)) +
   geom_point(alpha = 0.1, color = "#ec6163ff") + 
@@ -226,6 +228,7 @@ stateTSIjitter <- ggplot(LAGOStrophic, aes(x = state, y = TSI.chl, color = seaso
             fill = "gray70", color = "gray70") +
   geom_rect(xmin = -1, xmax = 19, ymin = 70, ymax = 100,
             fill = "gray60", color = "gray60") +
+  # These rectangles represent each trophic state
   geom_jitter(alpha = 0.3) +
   # geom_hline(yintercept = 40, lty = 2) +
   # geom_hline(yintercept = 50, lty = 2) +
@@ -239,11 +242,17 @@ print(stateTSIjitter)
 ```
 What insights do we gain from the different visualizations?
 
-> Violin: 
+> Violin: Shows us info about the distributions, range, and median values, but it didn't quantify each state
 
-> Bar: 
+> Bar: Shows us the number of measurements, and the distribution of those measurements.
 
 > Jitter:
 
 ## Closing Discussion
 What factors might you expect to influence TSI scores in a given area? What are some variables in the LAGOSNE database that could help you test your hypothesis?
+
+
+```{r}
+write.csv(LAGOStrophic, file = "./Data/LAGOStrophic.csv", row.names = FALSE)
+```
+
