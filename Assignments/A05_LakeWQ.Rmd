@@ -94,29 +94,19 @@ count(LAGOStrophic, vars = trophic.class.tp)
 7. What proportion of total observations are considered eutrohic or hypereutrophic according to the three different metrics (trophic.class, trophic.class.secchi, trophic.class.tp)?
 
 ```{r}
-# Add tc.tci column
-LAGOStrophic <- 
-  mutate(LAGOStrophic, tc.tci = 
-           ifelse(trophic.class == trophic.class.secchi,
-                  "True", "False"))
+count(LAGOStrophic, vars = trophic.class)
+(41861+14379)/74951
 
-# Add tc.tcp column
-LAGOStrophic <- 
-  mutate(LAGOStrophic, tc.tcp = 
-           ifelse(trophic.class == trophic.class.tp,
-                  "True", "False"))
+count(LAGOStrophic, vars = trophic.class.secchi)
+(28659+5099)/74951
 
-# Get count of TSI columns matching/differing
-count(LAGOStrophic, vars = tc.tci)
-47433/74951
-
-count(LAGOStrophic, vars = tc.tcp)
-48374/74951
+count(LAGOStrophic, vars = trophic.class.tp)
+(24839+7228)/73951
 ```
 
 Which of these metrics is most conservative in its designation of eutrophic conditions? Why might this be?
 
-> Trophic.class differs from trophic.class.secchi in 63.3% of the lakes, and it differs from trophic.class.tp in 64.5% of the lakes.
+> The proportions of eutrophic or hypereutrophic conditions to the total number of observations for trophic.class, trophic.class.secchi, and trophic.class.tp are 75%, 45%, and 43%, respectively. Total phosphorus is the most conservative in its designation of eutrophic conditions because it changes with the seasons and is typically only used in the summer months as a measure to calculate TPI.
 
 Note: To take this further, a researcher might determine which trophic classes are susceptible to being differently categorized by the different metrics and whether certain metrics are prone to categorizing trophic class as more or less eutrophic. This would entail more complex code.
 

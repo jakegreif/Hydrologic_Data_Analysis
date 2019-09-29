@@ -383,77 +383,99 @@ The completed exercise is due on 2 October 2019 at 9:00 am.
 \setcounter{enumi}{6}
 \tightlist
 \item
-  Find and quantify instances where trophic.class and
-  trophic.class.secchi differ. Do the same comparing trophic.class and
-  trophic.class.tp.
+  What proportion of total observations are considered eutrohic or
+  hypereutrophic according to the three different metrics
+  (trophic.class, trophic.class.secchi, trophic.class.tp)?
 \end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Add tc.tci column}
-\NormalTok{LAGOStrophic <-}\StringTok{ }
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(LAGOStrophic, }\DataTypeTok{tc.tci =} 
-           \KeywordTok{ifelse}\NormalTok{(trophic.class }\OperatorTok{==}\StringTok{ }\NormalTok{trophic.class.secchi,}
-                  \StringTok{"True"}\NormalTok{, }\StringTok{"False"}\NormalTok{))}
-
-\CommentTok{# Add tc.tcp column}
-\NormalTok{LAGOStrophic <-}\StringTok{ }
-\StringTok{  }\KeywordTok{mutate}\NormalTok{(LAGOStrophic, }\DataTypeTok{tc.tcp =} 
-           \KeywordTok{ifelse}\NormalTok{(trophic.class }\OperatorTok{==}\StringTok{ }\NormalTok{trophic.class.tp,}
-                  \StringTok{"True"}\NormalTok{, }\StringTok{"False"}\NormalTok{))}
-
-\CommentTok{# Get count of TSI columns matching/differing}
-\KeywordTok{count}\NormalTok{(LAGOStrophic, }\DataTypeTok{vars =}\NormalTok{ tc.tci)}
+\KeywordTok{count}\NormalTok{(LAGOStrophic, }\DataTypeTok{vars =}\NormalTok{ trophic.class)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 2 x 2
-##   vars      n
-##   <chr> <int>
-## 1 False 47433
-## 2 True  27518
+## # A tibble: 4 x 2
+##   vars               n
+##   <fct>          <int>
+## 1 Oligotrophic    3298
+## 2 Mesotrophic    15413
+## 3 Eutrophic      41861
+## 4 Hypereutrophic 14379
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\DecValTok{47433}\OperatorTok{/}\DecValTok{74951}
+\NormalTok{(}\DecValTok{41861}\OperatorTok{+}\DecValTok{14379}\NormalTok{)}\OperatorTok{/}\DecValTok{74951}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.6328535
+## [1] 0.7503569
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{count}\NormalTok{(LAGOStrophic, }\DataTypeTok{vars =}\NormalTok{ tc.tcp)}
+\KeywordTok{count}\NormalTok{(LAGOStrophic, }\DataTypeTok{vars =}\NormalTok{ trophic.class.secchi)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 2 x 2
-##   vars      n
-##   <chr> <int>
-## 1 False 48374
-## 2 True  26577
+## # A tibble: 4 x 2
+##   vars               n
+##   <fct>          <int>
+## 1 Oligotrophic   16110
+## 2 Mesotrophic    25083
+## 3 Eutrophic      28659
+## 4 Hypereutrophic  5099
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\DecValTok{48374}\OperatorTok{/}\DecValTok{74951}
+\NormalTok{(}\DecValTok{28659}\OperatorTok{+}\DecValTok{5099}\NormalTok{)}\OperatorTok{/}\DecValTok{74951}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.6454083
+## [1] 0.4504009
 \end{verbatim}
 
-What proportion of observations do these metrics differ?
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{count}\NormalTok{(LAGOStrophic, }\DataTypeTok{vars =}\NormalTok{ trophic.class.tp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 2
+##   vars               n
+##   <fct>          <int>
+## 1 Oligotrophic   19861
+## 2 Mesotrophic    23023
+## 3 Eutrophic      24839
+## 4 Hypereutrophic  7228
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{(}\DecValTok{24839}\OperatorTok{+}\DecValTok{7228}\NormalTok{)}\OperatorTok{/}\DecValTok{73951}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.433625
+\end{verbatim}
+
+Which of these metrics is most conservative in its designation of
+eutrophic conditions? Why might this be?
 
 \begin{quote}
-Trophic.class differs from trophic.class.secchi in 63.3\% of the lakes,
-and it differs from trophic.class.tp in 64.5\% of the lakes.
+The proportions of eutrophic or hypereutrophic conditions to the total
+number of observations for trophic.class, trophic.class.secchi, and
+trophic.class.tp are 75\%, 45\%, and 43\%, respectively. Total
+phosphorus is the most conservative in its designation of eutrophic
+conditions because it changes with the seasons and is typically only
+used in the summer months as a measure to calculate TPI.
 \end{quote}
 
 Note: To take this further, a researcher might determine which trophic
