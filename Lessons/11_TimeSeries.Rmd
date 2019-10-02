@@ -93,11 +93,11 @@ print(ClearCreekRegressionPlot)
 
 Is a linear regression an appropriate model for the data in this case? Why or why not?
 
-> 
+> No, because it doesn't take seasonality into account.
 
 Are there situations where it would be appropriate to use a linear regression to model a time series? If so, what is an example?
 
->
+> If we want to look at something on a regular time scale that eliminates seasonality (like if we look at a specific date over the years), then it would be more approporiate.
 
 
 ## Decomposing a time series dataset
@@ -115,6 +115,8 @@ Note: time series objects must be equispaced, which requires interpolation if th
 ```{r}
 ClearCreek_ts <- ts(ClearCreekDischarge[[4]], frequency = 365)
 
+table(diff(ClearCreekDischarge$Date))
+# we can use the code above to see if there are any gaps in the data. It indicates that there's 1 missing date.
 ```
 
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
