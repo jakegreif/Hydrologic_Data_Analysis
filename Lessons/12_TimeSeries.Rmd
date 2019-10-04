@@ -133,7 +133,11 @@ Linear interpolation is most common for water quality data, and fits with our un
 ```{r}
 # Generate monthly values from July 1988 to August 2013
 linearinterpolation <- as.data.frame(approx(Mendotadata, n = 303, method = "linear"))
+# n is the number of months we want the data to generate
+
 linearinterpolation$x <- as.Date(linearinterpolation$x, origin = "1970-01-01")
+# this fixes our x column. it changes it from # of days since 1970 to the actual date
+
 names(linearinterpolation) <- c("Date", "TP")
 
 # Inspect interpolated values 
@@ -158,7 +162,7 @@ summary(Mendotatrend)
 
 What would we conclude based on these findings? Describe as you would to an educated but non-specialist audience.
 
->
+> There is a significant decreasing trend of TP in October and November, but overall there is not a significant trend in TP.
  
 If a significant trend was present, we could compute a **Sen's Slope** to quantify that trend (`sens.slope` function in the trend package).
  
@@ -166,7 +170,7 @@ If a significant trend was present, we could compute a **Sen's Slope** to quanti
 
 We might be interested in characterizing a time series in order to understand what happened in the past and to effectively forecast into the future. Two common models that can approximate time series are **autoregressive** and **moving average** models. To classify these models, we use the  **ACF (autocorrelation function)** and the **PACF (partial autocorrelation function)**, which correspond to the autocorrelation of a series and the correlation of the residuals, respectively. 
 
-**Autoregressive** models operate under the framework that a given measurements is correlated with  previous measurements. For example, an AR1 formulation dictates that a measurement is dependent on the previous measurement, and the value can be predicted by quantifying the lag. 
+**Autoregressive** models operate under the framework that given measurements is correlated with  previous measurements. For example, an AR1 formulation dictates that a measurement is dependent on the previous measurement, and the value can be predicted by quantifying the lag. 
 
 **Moving average** models operate under the framework that the covariance between a measurement and the previous measurement is zero. While AR models use past forecast *values* to predict future values, MA models use past forecast *errors* to predict future values.
 
