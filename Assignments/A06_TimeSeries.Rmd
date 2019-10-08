@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: Time Series Analysis"
-author: "Student Name"
+author: "Jake Greif"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -27,8 +27,18 @@ The completed exercise is due on 11 October 2019 at 9:00 am.
 3. Set your ggplot theme (can be theme_classic or something else)
 4. Load the ClearCreekDischarge.Monthly.csv file from the processed data folder. Call this data frame ClearCreekDischarge.Monthly.
 
-```{r setup}
+```{r setup, message = FALSE}
+getwd()
 
+library(tidyverse)
+library(lubridate)
+library(dataRetrieval)
+library(trend)
+
+theme_set(theme_classic())
+
+ClearCreekDischarge.Monthly <- 
+  read.csv("./Data/Processed/ClearCreekDischarge.Monthly.csv")
 ```
 
 ## Time Series Decomposition
@@ -38,14 +48,35 @@ The completed exercise is due on 11 October 2019 at 9:00 am.
 8. Decompose the time series using the `stl` function.
 9. Visualize the decomposed time series.
 ```{r}
+# Import data
+EnoDischarge <- readNWISdv(siteNumbers = "02085070",
+                     parameterCd = "00060", 
+                     startDate = "",
+                     endDate = "")
+names(EnoDischarge)[4:5] <- c("Discharge", "Approval.Code")
 
+# Plot discharge over time
+EnoPlot <- 
+  ggplot(EnoDischarge, aes(x = Date, y = Discharge)) +
+  geom_line() +
+  labs(x = "", y = expression("Discharge (ft"^3*"/s)"))
+print(EnoPlot)
+
+# Creat time series
+Eno_ts <- ts(EnoDischarge[[4]], frequency = 365)
+
+# Decompose time series
+Eno_Decomposed <- stl(Eno_ts, s.window = "periodic")
+
+# Visualize the decomposed series. 
+plot(Eno_Decomposed)
 ```
 
 10. How do the seasonal and trend components of the decomposition compare to the Clear Creek discharge dataset? Are they similar in magnitude?
 
-> Seasonal: 
+> Seasonal: The seasonal component of the Eno is noisier and lesser in magnitude compared to Clear Creek.
 
-> Trend: 
+> Trend: The trend component of the Eno is lower in magnitude compared to Clear Creek, but Clear Creek trend seems to be more smooth (less intense changes) than the Eno.
 
 ## Trend Analysis
 Research question: Has there been a monotonic trend in discharge in Clear Creek over the period of study?
@@ -53,30 +84,48 @@ Research question: Has there been a monotonic trend in discharge in Clear Creek 
 11. Generate a time series of monthly discharge in Clear Creek from the ClearCreekDischarge.Monthly data frame. This time series should include just one column (discharge). 
 12. Run a Seasonal Mann-Kendall test on the monthly discharge data. Inspect the overall trend and the monthly trends. 
 ```{r}
+# Plot, observe data
+ClearCreekDischarge <- readNWISdv(siteNumbers = "06719505",
+                     parameterCd = "00060", # discharge (ft3/s)
+                     startDate = "",
+                     endDate = "")
+names(ClearCreekDischarge)[4:5] <- c("Discharge", "Approval.Code")
 
+ggplot(ClearCreekDischarge, aes(x = Date, y = Discharge)) +
+  geom_point()
+
+# Generate time series
+ClearCreek_ts <- ts(ClearCreekDischarge.Monthly[[3]], frequency = 12)
+
+# Run SMK test
+CCtrend <- smk.test(ClearCreek_ts)
+
+# Inspect results
+CCtrend
+summary(CCtrend)
 ```
 
 13. Is there an overall monotonic trend in discharge over time? If so, is it positive or negative?
 
-> 
+> There is not a significant overall monotonic trend in discharge over time.
 
 14. Are there any monthly monotonic trends in discharge over time? If so, during which months do they occur and are they positive or negative?
 
-> 
+> There are posotive monotonic trends in discharge in the months of June and July.
 
 ## Reflection
 15. What are 2-3 conclusions or summary points about time series you learned through your analysis?
 
->
+> Time series contain a lot of useful information, but they require high quality data. It is possible to run trend analyses in the abscence of high quality data, but it's important to carefully choose the proper interpolation techniques and trend analyses because certain types of statistical tests are only appropriate for specific types of data.
 
 16. What data, visualizations, and/or models supported your conclusions from 12?
 
-> 
+> The assumptions for each of the monotonic trend tests are all slightly different and require careful consideration of the data before using them. The 'challenges' of time series analysis layed out at the beginning of lesson 11 also highlight the difficulty of analyzing time series.
 
 17. Did hands-on data analysis impact your learning about time series relative to a theory-based lesson? If so, how?
 
->
+> Yes, because the hands-on data analysis allowed me to see how the statistical tests can be applied. Without the hands-on experience, I would have a much more difficult time understanding how to apply the statistical tests to data in the future.
 
 18.	How did the real-world data compare with your expectations from theory?
 
->
+> I assumed that there would be more significant trends in discharge over time or from month to month based on what I've learned about the impacts of climate change on the hydrologic cycle. 
