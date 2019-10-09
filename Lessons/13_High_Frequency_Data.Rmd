@@ -25,6 +25,8 @@ High frequency data is usually defined as frequencies significantly lower than d
 ```{r, message = FALSE}
 getwd()
 
+#install.packages("EcoHydRology")
+
 packages <- c(
   "dataRetrieval", "tidyverse", "cowplot", "EcoHydRology", "xts", "dygraphs"
   )
@@ -72,7 +74,7 @@ plot_grid(
 
 The shape and size of river hydrographs following rain events can tell us how water moves through a watershed. Once rain falls, how does water get to a stream? What would the streamflow do?
 
->
+> 
 
 
 _"Hydrograph separation is one of the most desperate analysis techniques in use in hydrology" - Hewlett & Hibbert 1967_
@@ -85,13 +87,17 @@ TFCbaseflow <- BaseflowSeparation(
   passes = 3
   )
 
+# the filter_parameter and passes functions are set to the default
+
 TFC2018 <- cbind(dischargedatTFC2018, TFCbaseflow)
 
 ggplot(TFC2018, aes(x = dateTime, y = Flow_Inst)) + 
   geom_line() +
-  # scale_y_log10() +
+   scale_y_log10() +
   geom_line(mapping = aes(x = dateTime, y = bt), color = "darkorange4") +
   geom_line(mapping = aes(x = dateTime, y = qft), color = "steelblue4")
+
+# making it log scale doesn't work so well because there are a bunch of 0s in the data
 
 dygraph(
   cbind(
@@ -104,8 +110,12 @@ dygraph(
 
 Export <- TFC2018 %>%
   mutate(timestep = c(diff(as.numeric(dateTime)), NA_real_),
+# use diff function to find the difference in time between each data point
+# making dateTime numeric gives us time in seconds. We want it in seconds because our discharge is in cfs
+# NA_real_ creates an NA value in order for diff to produce an equal number of rows to our dataset (in the summarize function below, we remove the NA)
          baseflowexport = bt * timestep,
          quickflowexport = qft * timestep) %>%
+# the above equations give us the volume of water between each data point
   summarize(BaseflowExport_cf = sum(baseflowexport, na.rm = T),
             QuickflowExport_cf = sum(quickflowexport, na.rm = T),
             TotalExport_cf = BaseflowExport_cf + QuickflowExport_cf)
@@ -114,15 +124,34 @@ Export <- TFC2018 %>%
 
 What percentage of water is exported from this watershed as baseflow? What percentage as quickflow?
 
-> 
+> 51.9% is baseflow, 48.1% is quick flow
 
 Repeat this analysis for Ellerbe Creek. How do the percentages compare?
 
->
+> 43.4% is baseflow, 56.6% is quick flow
+
+```{r}
+ECbaseflow <- BaseflowSeparation(
+  dischargedatEC2018$Flow_Inst, 
+  filter_parameter = 0.925, 
+  passes = 3
+  )
+
+EC2018 <- cbind(dischargedatEC2018, ECbaseflow)
+
+ExportEC <- EC2018 %>%
+  mutate(timestep = c(diff(as.numeric(dateTime)), NA_real_),
+         baseflowexport = bt * timestep,
+         quickflowexport = qft * timestep) %>%
+  summarize(BaseflowExport_cf = sum(baseflowexport, na.rm = T),
+            QuickflowExport_cf = sum(quickflowexport, na.rm = T),
+            TotalExport_cf = BaseflowExport_cf + QuickflowExport_cf)
+```
+
 
 What does this mean physically about the watershed?
 
->
+> The Ellerbe Creek watershed is likely more urbanized than the Third Fork Creek watershed.
 
 ## Hydrologic Flashiness
 
@@ -130,13 +159,15 @@ A "flashy" stream increases in flow faster following a precipitation event.
 
 Refering to our previous work with baseflow separation, would you expect flashiness to increase or decrease with urbanization?
 
-> 
+> Flashiness would increase with urbanization.
 
 What do you think "urban stream syndrom" refers to?
 
->
+> Urban streams have higher quick flow due to more impervious surfaces relative to natural conditions.
 
 The Richards-Baker Index is an index of how flashy a stream is. It is calculated as $$RBI = (\sum_{j = 1}^n |Q_j - Q_{j-1}| / \sum_{j = 1}^n Q_j) / Catchment Area$$
+
+  - j = timestep
 
 ```{r Flashiness}
 TFCsitedata <- readNWISsite(site = "02097280")
@@ -159,7 +190,7 @@ RBI_EC2018 <- (
 
 Which stream is flashier?
 
->
+> Ellerbe Creek is flashier because the RBI (0.012) is higher than the RBI for Third Fork Creek (0.003)
 
 ## Chemical Flashiness
 
