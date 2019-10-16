@@ -28,7 +28,7 @@ The geometry of a given spatial data point consists of coordinates in 2-, 3-, or
 
 A feature (object) most often falls into one of these three categories (more complex examples exist; see the `sf` package documentation for more): 
 
-* **Point** <add notes here>
+* **Point** 
 * **Line** <add notes here>
 * **Polygon** <add notes here>
 
@@ -65,7 +65,6 @@ LAGOSdata <- lagosne_load()
 # If the lagosne_get function has not worked, use this code: 
 # load(file = "./Data/Raw/LAGOSdata.rda")
 
-
 ```
 ## Generating spatial data frames
 
@@ -74,6 +73,8 @@ We will be using the `st_as_sf` function today, which converts an object to a si
 ```{r}
 # generate a map of U.S. states
 states <- st_as_sf(map(database = "state", plot = TRUE, fill = TRUE, col = "white"))
+# st_as_sf converts an object to a simple features object.
+
 
 # filter only states that are included in the LAGOSNE database
 states.subset <- filter(states, ID %in% 
@@ -82,6 +83,8 @@ states.subset <- filter(states, ID %in%
                             "pennsylvania", "new york", "new jersey",
                             "connecticut", "new hampshire", "rhode island",
                             "massachusetts", "vermont", "maine"))
+# %in% says include the following that are in the ID column
+
 # visualize state plot
 LAGOSstateplot <- ggplot(states.subset) +
   geom_sf(fill = "white")
@@ -117,6 +120,7 @@ secchi.summary <- LAGOScombined %>%
             lat = mean(nhd_lat), 
             long = mean(nhd_long)) %>%
   drop_na()
+# We include mean area, depth, lat, and long because we are creating an entirely new dataset. We know that the data is consistent, so we're not actually calculating a new value for these, we just want them to be included in our new dataset
 ```
 
 ## A Word on Projections
@@ -128,6 +132,7 @@ For today, we will use the EPSG projection 4326, also known by WGS 84. This proj
 ## Plotting secchi depths across LAGOSNE lakes
 ```{r}
 secchi.spatial <- st_as_sf(secchi.summary, coords = c("long", "lat"), crs = 4326)
+# crs is the unique code (EPSG) for a specific type of projection
 
 Secchiplot <- ggplot() +
   geom_sf(data = states.subset, fill = "white") +
@@ -146,25 +151,52 @@ Your turn! Notice that Maine has a large number of lakes with secchi depth measu
 1. Filter the states and secchi depth datasets so that they contain Maine only. For the secchi depth dataset, create a summary dataset with just the mean secchi depth. 
 
 ```{r}
+Maine <- filter(states.subset, ID == "maine")
 
+Maine.dat <- filter(LAGOScombined, state == "ME") %>%
+  group_by(lagoslakeid) %>%
+  summarise(secchi.mean = mean(secchi),
+            area = mean(lake_area_ha),
+            depth = mean(maxdepth),
+            lat = mean(nhd_lat), 
+            long = mean(nhd_long)) %>%
+  drop_na()
+
+Maine.spatial <- st_as_sf(Maine.dat, coords = c("long", "lat"), crs = 4326)
 ```
 
 2. Create a plot of mean secchi depth for lakes in Maine, with mean secchi depth designated as color and the lake area as the size of the dot. Remember that you are using size in the aesthetics and should remove the size = 1 from the other part of the code. Adjust the transparency of points as needed.
 
 ```{r}
 
+Maine.plot <- ggplot() +
+  geom_sf(data = Maine, fill = "white") +
+  geom_sf(data = Maine.spatial, aes(color = secchi.mean, size = area), 
+          alpha = 0.5) +
+  scale_color_viridis_c() +
+  labs(color = "Average Secchi Depth (m)") +
+  theme(legend.position = "top")
+print(Maine.plot)
 ```
 
 3. Create a second plot, but this time use maximum depth of the lake as the size of the dot. 
 
 ```{r}
+Maine.plot2 <- ggplot() +
+  geom_sf(data = Maine, fill = "white") +
+  geom_sf(data = Maine.spatial, aes(color = secchi.mean, size = depth), 
+          alpha = 0.5) +
+  scale_color_viridis_c() +
+  labs(color = "Average Secchi Depth (m)") +
+  theme(legend.position = "top")
 
+print(Maine.plot2)
 ```
 
 4. Plot these maps in the same plot with the `plot_grid` function. Don't worry about adjusting the legends (if you have extra time this would be a good bonus task).
 
 ```{r}
-
+plot_grid(Maine.plot, Maine.plot2)
 ```
 
 5. What relationships do you see between secchi depth, lake area, and lake depth? Which of the two lake variables seems to be a stronger determinant of secchi depth? (you can make a scatterplot or run a regression to test this if time remains)
