@@ -35,7 +35,7 @@ Today, we will be working with the USA rivers shape file (see metadata file in R
 
 ### Water features line objects
 ```{r}
-waterfeatures <- st_read("../Data/Raw/hydrogl020.dbf")
+waterfeatures <- st_read("./Data/Raw/hydrogl020.dbf")
 class(waterfeatures)
 
 # Filter for North Carolina

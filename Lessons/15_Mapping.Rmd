@@ -211,6 +211,7 @@ We might want to visualize how monitoring efforts and secchi depths have changed
 LAGOScombined <- LAGOScombined %>%
   mutate(decade = floor_date(sampledate, years (10)),
          decade = year(decade))
+# floor_date is rounding DOWN (because floor) every year to the nearest 10th from the sampledate column
 
 # create a new summary data frame, with each lake divided by decade
 secchi.summary.decade <- LAGOScombined %>%
@@ -248,7 +249,9 @@ Secchi.Animation <- ggplot() +
   theme(legend.position = "top") +
   #gganimate code here:
   labs(title = 'Decade: {closest_state}', color = "Average Secchi Depth (m)") +
+# we're using decade as our 'state' which we can see below. so the title will be decade that is being shown
   transition_states(decade, state_length = 1, transition_length = 0) +
+# state_length is how long the image lasts, and transition_length is the overlap between images
   enter_appear() +
   exit_disappear() 
 
