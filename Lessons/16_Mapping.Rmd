@@ -67,6 +67,7 @@ HUC6 <- st_read("./Data/Raw/Watersheds_Spatial/WBDHU6.dbf")
 summary(HUC6$States)
 HUC6.NC <- HUC6 %>%
   filter(States %in% c("GA,NC,SC", "NC", "NC,SC", "NC,SC,VA", "NC,VA"))
+# %in% allows us to use the c() command. If we didn't have it, we would have to say filter(States == "GA,NC,SC" | States == "NC, and so on)
 
 
 ```
@@ -84,6 +85,7 @@ waterfeatures <- st_set_crs(waterfeatures, 4269)
 st_crs(waterfeatures)
 
 #waterfeatures <- waterfeatures %>% st_set_crs(st_crs(HUC6.NC))
+# the commented out code above can be used if we want to do clipping or other things
 
 NClayers <- ggplot() +
   geom_sf(data = HUC6.NC, aes(fill = Name), color = "darkgray", alpha = 0.5) +
